@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UQ GeoGuessr Lobby</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #5b2cff;
+      color: white;
+      text-align: center;
+      padding-top: 40px;
+    }
+    .lobby-code {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    #qr {
+      margin: 20px auto;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      width: fit-content;
+    }
+    .player-list {
+      background: rgba(255,255,255,0.15);
+      width: 60%;
+      max-width: 600px;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 30px auto;
+      min-height: 200px;
+    }
+    .player {
+      background: rgba(255,255,255,0.25);
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      font-size: 1.2rem;
+    }
+    .start-btn {
+      margin-top: 30px;
+      background: #ffeb3b;
+      padding: 12px 20px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lobby-code">Lobby Code: <span id="code"></span></div>
+
+  <div id="qr"></div>
+
+  <div class="player-list" id="playerList">
+    <h2>Players Joined</h2>
+  </div>
+
+  <button class="start-btn" onclick="startGame()">Start Game</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    let lobbyCode = params.get("lobby");
+
+    if (!lobbyCode) {
+      lobbyCode = Math.floor(10000 + Math.random() * 90000).toString();
+      window.history.replaceState({}, "", `?lobby=${lobbyCode}`);
+    }
+
+    document.getElementById("code").textContent = lobbyCode;
+
+    const joinURL = `https://chichalibre.github.io/Hackathon-2026/join.html?lobby=${lobbyCode}`;
+
+    new QRCode(document.getElementById("qr"), {
+      text: joinURL,
+      width: 180,
+      height: 180,
+      colorDark: "#000000",
+      colorLight: "#ffffff"
+    });
+
+    function renderPlayers() {
+      const players = JSON.parse(localStorage.getItem(lobbyCode) || "[]");
+      const playerList = document.getElementById("playerList");
+
+      playerList.innerHTML = "<h2>Players Joined</h2>";
+
+      players.forEach(name => {
+        const div = document.createElement("div");
+        div.className = "player";
+        div.textContent = name;
+        playerList.appendChild(div);
+      });
+    }
+
+    renderPlayers();
+
+    function startGame() {
+      window.location.href = `game.html?lobby=${lobbyCode}`;
+    }
+  </script>
+
+</body>
+</html>

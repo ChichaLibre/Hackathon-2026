@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Join Lobby</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding-top: 80px;
+    }
+    input {
+      padding: 10px;
+      font-size: 1.2rem;
+      width: 240px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      border-radius: 6px;
+      background: #00e676;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Join Lobby</h1>
+  <p id="lobbyDisplay"></p>
+
+  <input id="nameInput" type="text" placeholder="Your name">
+  <button onclick="join()">Join</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const lobbyCode = params.get("lobby");
+
+    document.getElementById("lobbyDisplay").textContent =
+      "Lobby Code: " + lobbyCode;
+
+    function join() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (!name) return;
+
+      let players = JSON.parse(localStorage.getItem(lobbyCode) || "[]");
+      players.push(name);
+      localStorage.setItem(lobbyCode, JSON.stringify(players));
+
+      window.location.href = `lobby.html?lobby=${lobbyCode}`;
+    }
+  </script>
+
+</body>
+</html>
