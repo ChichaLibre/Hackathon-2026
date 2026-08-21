@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>UQ GeoGuessr Lobby</title>
+  <title>UQGuessr Lobby</title>
 
+  <!-- Firebase v8 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="firebase.js"></script>
+
+  <!-- QR Code generator -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -66,6 +72,7 @@
   <button class="start-btn" onclick="startGame()">Start Game</button>
 
   <script>
+    // Get lobby code from URL or generate one
     const params = new URLSearchParams(window.location.search);
     let lobbyCode = params.get("lobby");
 
@@ -76,34 +83,38 @@
 
     document.getElementById("code").textContent = lobbyCode;
 
+    // Generate QR code
     const joinURL = `https://chichalibre.github.io/Hackathon-2026/join.html?lobby=${lobbyCode}`;
+    new QRCode(document.getElementById("qr"), joinURL);
 
-    new QRCode(document.getElementById("qr"), {
-      text: joinURL,
-      width: 180,
-      height: 180,
-      colorDark: "#000000",
-      colorLight: "#ffffff"
-    });
+    // Listen for players joining in Firebase
+    const playersRef = db.ref("lobbies/" + lobbyCode + "/players");
 
-    function renderPlayers() {
-      const players = JSON.parse(localStorage.getItem(lobbyCode) || "[]");
+    playersRef.on("value", snapshot => {
       const playerList = document.getElementById("playerList");
-
       playerList.innerHTML = "<h2>Players Joined</h2>";
 
-      players.forEach(name => {
+      const players = snapshot.val();
+      if (!players) return;
+
+      Object.values(players).forEach(name => {
         const div = document.createElement("div");
         div.className = "player";
         div.textContent = name;
         playerList.appendChild(div);
       });
-    }
+    });
 
-    renderPlayers();
+    // Sync start game to all devices
+    db.ref("lobbies/" + lobbyCode + "/state").on("value", snapshot => {
+      if (snapshot.val() === "started") {
+        window.location.href = "game.html?lobby=" + lobbyCode;
+      }
+    });
 
     function startGame() {
-      window.location.href = `game.html?lobby=${lobbyCode}`;
+      db.ref("lobbies/" + lobbyCode + "/state").set("started");
+      window.location.href = "game.html?lobby=" + lobbyCode;
     }
   </script>
 

@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>Join Lobby</title>
 
+  <!-- Firebase v8 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="firebase.js"></script>
+
   <style>
     body {
       font-family: Arial;
@@ -47,10 +52,10 @@
       const name = document.getElementById("nameInput").value.trim();
       if (!name) return;
 
-      let players = JSON.parse(localStorage.getItem(lobbyCode) || "[]");
-      players.push(name);
-      localStorage.setItem(lobbyCode, JSON.stringify(players));
+      // Add player to Firebase
+      db.ref("lobbies/" + lobbyCode + "/players").push(name);
 
+      // Redirect to lobby
       window.location.href = `lobby.html?lobby=${lobbyCode}`;
     }
   </script>
