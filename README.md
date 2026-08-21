@@ -9,7 +9,7 @@ Project Brief: https://docs.google.com/document/d/13or1-2sW-gJN9QrQurvIzEiZcbr08
 
 -----
 By:
-Christian Valer
-Miles Denny
-Nicholas Buckley
-Rain Zhu
+- Christian Valer
+- Miles Denny
+- Nicholas Buckley
+- Rain Zhu
